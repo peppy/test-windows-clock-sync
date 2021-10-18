@@ -13,11 +13,16 @@ namespace TestWindowsClockSync
     {
         const int run_time = 120000;
 
+        const string logs_directory = "logs";
+
         private static string log_prefix;
 
         static void Main()
         {
-            log_prefix = $"run_{DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture)}_";
+            if (!Directory.Exists(logs_directory))
+                Directory.CreateDirectory(logs_directory);
+
+            log_prefix = Path.Combine(logs_directory, $"run_{DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture)}_");
 
             run("baseline");
 
@@ -60,7 +65,7 @@ namespace TestWindowsClockSync
         static void log(string runName, string logText = "")
         {
             Console.WriteLine(logText);
-            File.AppendAllText(log_prefix + runName, $"{logText}\n");
+            File.AppendAllText(log_prefix + runName + ".log", $"{logText}\n");
         }
     }
 
