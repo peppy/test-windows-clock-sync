@@ -24,10 +24,19 @@ namespace TestWindowsClockSync
 
             log_prefix = Path.Combine(logs_directory, $"run_{DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture)}_");
 
+            Bass.Init(0);
             run("baseline");
 
             using (new TimePeriod(1))
                 run("timeperiod");
+            Bass.Free();
+
+            Bass.Init();
+            run("real_baseline");
+
+            using (new TimePeriod(1))
+                run("real_timeperiod");
+            Bass.Free();
         }
 
         private static void run(string runName)
@@ -88,7 +97,6 @@ namespace TestWindowsClockSync
         {
             byte[] bytes = File.ReadAllBytes(filename);
 
-            Bass.Init(0);
             handle = Bass.CreateStream(bytes, 0, bytes.Length, BassFlags.Default);
 
             WaitForSyncedStart();
